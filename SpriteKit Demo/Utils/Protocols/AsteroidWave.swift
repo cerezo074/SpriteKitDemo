@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import SpriteKit
 
 protocol AsteroidsWave {
+    var asteroidTexture: SKTexture { get set }
     var maxWaves: Int { get }
     var currentWave: Int { get set }
     var maxNumberItemsPerWave: Int { get }

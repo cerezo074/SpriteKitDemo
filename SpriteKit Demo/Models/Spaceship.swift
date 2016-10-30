@@ -1,5 +1,5 @@
 //
-//  Space.swift
+//  Spaceship.swift
 //  SpriteKit Demo
 //
 //  Created by Eli Pacheco Hoyos on 10/23/16.
@@ -9,14 +9,19 @@
 import UIKit
 import SpriteKit
 
-class Spaceship: SKSpriteNode, DamageBody {
+class Spaceship: SKSpriteNode {
 
     weak var damageDelegate: DamageDelegate?
     var currentDamage: Int = 0
     var maxDamage: Int = 2
 
+}
+
+extension Spaceship: DamageBody {
+
     func explote() {
 
+        physicsBody?.isDynamic = false
         let explosionAtlas = SKTextureAtlas(named: "explotion")
         let explotionAnimationAction = SKAction.animate(with: explosionAtlas.allTextures(), timePerFrame: 0.15)
         let explotionSoundAction = SKAction.playSoundFileNamed("explosion", waitForCompletion: false)
