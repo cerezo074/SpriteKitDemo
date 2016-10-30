@@ -29,7 +29,6 @@ private extension IntroScene {
     }
 
     func createContent() {
-
         backgroundColor = .black
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
         addChild(createWelcomeLabel())
@@ -46,11 +45,9 @@ private extension IntroScene {
                                      y: (view!.frame.size.height / 2) * 1.25)
 
         view?.addSubview(startButton)
-
     }
 
     @objc func startCounterActions(sender: UIButton) {
-
         sender.removeFromSuperview()
         let counterLabel = createCountLabel()
         counterLabel.position = CGPoint(x: 0, y: 0.5 * frame.size.height / -2)
@@ -67,18 +64,19 @@ private extension IntroScene {
     func createWelcomeLabel() -> SKLabelNode {
         let welcomeLabel = SKLabelNode(text: "Welcome!!!")
         welcomeLabel.fontSize = 30
+
         return welcomeLabel
     }
 
     func createCountLabel() -> CounterLabelNode {
-        let countLabel = CounterLabelNode(text: "3")
+        let countLabel = CounterLabelNode()
         countLabel.name = NodeNames.countLabelNode
         countLabel.fontSize = 40
+
         return countLabel
     }
 
     func createStartButton(target: Any, action: Selector) -> UIButton {
-
         let startButton = UIButton()
         startButton.setTitle("Start", for: .normal)
         startButton.addTarget(target,
@@ -88,8 +86,8 @@ private extension IntroScene {
         startButton.layer.cornerRadius = 10
         startButton.backgroundColor = .white
         startButton.setTitleColor(.black, for: .normal)
-        return startButton
 
+        return startButton
     }
 
 }

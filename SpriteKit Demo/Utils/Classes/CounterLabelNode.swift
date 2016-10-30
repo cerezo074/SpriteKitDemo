@@ -18,8 +18,9 @@ class CounterLabelNode: SKLabelNode {
     }
     var initalScale: CGFloat = 3.0
     var finalScale: CGFloat = 1.0
-    var duration: TimeInterval = 1.0
-    var durationForSetup: TimeInterval = 0.2
+    var durationShrinkingAction: TimeInterval = 1.0
+    var durationForGrowingAction: TimeInterval = 0.2
+    var delayTime: TimeInterval = 0.0
 
 }
 

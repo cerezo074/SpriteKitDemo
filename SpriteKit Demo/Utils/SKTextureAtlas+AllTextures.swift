@@ -16,8 +16,8 @@ extension SKTextureAtlas {
         for textureName in textureNames {
             textures.append(textureNamed(textureName))
         }
-        return textures
 
+        return textures
     }
 
 }

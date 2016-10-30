@@ -30,11 +30,11 @@ extension Shooter where Self: SKNode {
         missile.run(launchMissileAction()) {[weak self] in
             self?.missileWasRemoved()
         }
+
         addChild(missile)
     }
 
     func launchMissileForever() {
-
         let sequence = SKAction.sequence([
             SKAction.wait(forDuration: timeIntervalForLaunchMissiles),
             SKAction.run { [weak self] in
@@ -42,8 +42,12 @@ extension Shooter where Self: SKNode {
             }
             ])
         let repeatForever = SKAction.repeatForever(sequence)
-        run(repeatForever, withKey: lauchMissileForEverActionKey)
 
+        run(repeatForever, withKey: lauchMissileForEverActionKey)
+    }
+
+    func stopLaunchingMissiles() {
+        removeAction(forKey: lauchMissileForEverActionKey)
     }
 
 }

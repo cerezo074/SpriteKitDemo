@@ -15,8 +15,9 @@ typealias CounterListener = () -> ()
     var counter: Int { get set }
     var initalScale: CGFloat { get set }
     var finalScale: CGFloat { get set }
-    var duration: TimeInterval { get set }
-    var durationForSetup: TimeInterval { get set }
+    var durationShrinkingAction: TimeInterval { get set }
+    var durationForGrowingAction: TimeInterval { get set }
+    var delayTime: TimeInterval { get set }
     func secondElapsed()
 }
 
@@ -33,12 +34,12 @@ extension Counter where Self: SKLabelNode {
         for _ in 0 ..< counter {
 
             let growAction = SKAction.group([
-                SKAction.scale(to: initalScale, duration: durationForSetup),
-                SKAction.fadeIn(withDuration: durationForSetup)
+                SKAction.scale(to: initalScale, duration: durationForGrowingAction),
+                SKAction.fadeIn(withDuration: durationForGrowingAction)
                 ])
             let shrinkAction = SKAction.group([
-                SKAction.scale(to: finalScale, duration: duration),
-                SKAction.fadeOut(withDuration: duration),
+                SKAction.scale(to: finalScale, duration: durationShrinkingAction),
+                SKAction.fadeOut(withDuration: durationShrinkingAction),
                 SKAction.playSoundFileNamed("counter.mp3", waitForCompletion: false)
                 ])
 
@@ -62,7 +63,17 @@ extension Counter where Self: SKLabelNode {
     }
 
     func startCounter(completion: @escaping CounterListener) {
-        run(counterActions(), completion: completion)
+        let delayAction = SKAction.wait(forDuration: delayTime)
+        let setTextAction = SKAction.run {[weak self] in
+            self?.text = self?.counterText()
+        }
+        let sequence = SKAction.sequence([
+            delayAction,
+            setTextAction,
+            counterActions()
+            ])
+
+        run(sequence, completion: completion)
     }
 
 }

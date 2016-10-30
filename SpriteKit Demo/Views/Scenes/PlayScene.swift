@@ -14,8 +14,8 @@ class PlayScene: SKScene {
     var isSpaceshipTouched = false
     var spaceship: Spaceship?
 
-    var maxWaves: Int = 5
-    var currentWave: Int = 0
+    var maxWaves: Int = 2
+    var currentWave: Int = 1
     var maxNumberItemsPerWave: Int = 15
     var remainingAsteroidsOnWave: Int = 15
     var asteroidTexture = SKTexture(imageNamed: "asteroid")
@@ -47,6 +47,7 @@ private extension PlayScene {
     struct NodeNames {
         static let spacehip = "spaceship"
         static let asteroidPrefix = "asteroid"
+        static let countLabelNode = "counterLabel"
     }
 
     func createContent() {
@@ -74,6 +75,7 @@ private extension PlayScene {
         asteroid.physicsBody?.categoryBitMask = PhysicsCategory.Asteroid
         asteroid.physicsBody?.collisionBitMask = PhysicsCategory.Asteroid
         asteroid.physicsBody?.contactTestBitMask = PhysicsCategory.Spaceship | PhysicsCategory.Missile
+
         return asteroid
     }
 
@@ -184,9 +186,14 @@ extension PlayScene: DamageDelegate {
 
     func bodyWillExplote(on: DamageBody) {
         if let asteroid = on as? Asteroid,
-            let asteroidIndex = asteroid.userData?.object(forKey: Asteroid.DataKeys.index) as? Int,
-            self.responds(to: #selector(PlayScene.asteroidIsOut(indexAsteroid:))) {
+            let asteroidIndex = asteroid.userData?.object(forKey: Asteroid.DataKeys.index) as? Int {
             asteroidIsOut(indexAsteroid: asteroidIndex)
+        }
+
+        if (on as? Spaceship) != nil {
+            stopWaves()
+            stopLaunchingMissiles()
+            showMessageLabel(message: "You lose!!!", actionForMessageLabel: SKAction.fadeIn(withDuration: 0.5))
         }
     }
 
@@ -205,7 +212,6 @@ extension PlayScene: Shooter {
     }
 
     func destinationForMissile() -> CGPoint {
-
         if let spaceship = spaceship {
             return CGPoint(x: spaceship.position.x, y: size.height + missileTexture.size().height / 2)
         }
@@ -260,6 +266,14 @@ extension PlayScene: Shooter {
 
 extension PlayScene: AsteroidsWave {
 
+    func createMessageLabel() -> CounterLabelNode {
+        let countLabel = CounterLabelNode()
+        countLabel.name = NodeNames.countLabelNode
+        countLabel.fontSize = 40
+        countLabel.fontColor = UIColor.black
+        return countLabel
+    }
+
     func startWaves() {
         prepareNextWave(wave: 0)
         nextWave(wave: 0)
@@ -268,7 +282,12 @@ extension PlayScene: AsteroidsWave {
     func stopWaves() {
         currentWave = 0
         remainingAsteroidsOnWave = maxNumberItemsPerWave
-        removeAllChildren()
+        for index in 0 ..< maxNumberItemsPerWave {
+            let asteroidName = NodeNames.asteroidPrefix + String(index)
+            if let asteroid = childNode(withName: asteroidName) {
+                asteroid.removeAllActions()
+            }
+        }
     }
 
     func prepareNextWave(wave: Int) {
@@ -277,7 +296,7 @@ extension PlayScene: AsteroidsWave {
 
     func nextWave(wave: Int) {
 
-        if currentWave == maxWaves {
+        if currentWave > maxWaves {
             userDidFinishedLastWave()
             return
         }
@@ -314,7 +333,6 @@ extension PlayScene: AsteroidsWave {
                 })
 
             addChild(asteroid)
-
         }
 
     }
@@ -330,18 +348,20 @@ extension PlayScene: AsteroidsWave {
             }
             else {
                 prepareNextWave(wave: currentWave)
-                nextWave(wave: currentWave)
+                stopLaunchingMissiles()
+                showCounterMessageLabel(message: "Wave \(currentWave)", completionBlockForAction: { [weak self] in
+                    self?.nextWave(wave: (self?.currentWave)!)
+                    self?.launchMissileForever()
+                })
             }
         }
 
     }
 
     func userDidFinishedLastWave() {
-        print("Finish")
-    }
-
-    func userLost() {
-        print("Lost")
+        stopWaves()
+        stopLaunchingMissiles()
+        showMessageLabel(message: "You Win!!!", actionForMessageLabel: SKAction.fadeIn(withDuration: 0.5))
     }
 
 }
