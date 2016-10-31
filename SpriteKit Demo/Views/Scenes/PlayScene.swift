@@ -13,6 +13,7 @@ class PlayScene: SKScene {
     private(set) var contentCreated = false
     var isSpaceshipTouched = false
     var spaceship: Spaceship?
+    var backgroundMusicActionKey = "background_music"
 
     var maxWaves: Int = 2
     var currentWave: Int = 1
@@ -55,6 +56,7 @@ private extension PlayScene {
         backgroundColor = .yellow
         physicsWorld.gravity = CGVector.zero
         physicsWorld.contactDelegate = self
+        playBackGroundMusic()
 
         asteroidTexture = SKTexture(imageNamed: ImageNames.asteroid)
         let spaceship = createSpaceShip()
@@ -91,6 +93,18 @@ private extension PlayScene {
         playerSpaceship.physicsBody?.collisionBitMask = PhysicsCategory.None
 
         return playerSpaceship
+    }
+
+    func playBackGroundMusic() {
+        if action(forKey: backgroundMusicActionKey) != nil {
+            stopBackgrondMusic()
+        }
+        let backgroundMusicAction = SKAction.repeatForever(SKAction.playSoundFileNamed("background_music", waitForCompletion: true))
+        run(backgroundMusicAction, withKey: backgroundMusicActionKey)
+    }
+
+    func stopBackgrondMusic() {
+        removeAction(forKey: backgroundMusicActionKey)
     }
 
 }
@@ -192,6 +206,7 @@ extension PlayScene: DamageDelegate {
 
         if (on as? Spaceship) != nil {
             stopWaves()
+            stopBackgrondMusic()
             stopLaunchingMissiles()
             showMessageLabel(message: "You lose!!!", actionForMessageLabel: SKAction.fadeIn(withDuration: 0.5))
         }
